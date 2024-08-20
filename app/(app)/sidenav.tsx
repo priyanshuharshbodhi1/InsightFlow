@@ -5,8 +5,9 @@ import { Grid2X2, Home, MessageSquareDashed, Users2 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import Logo from "@/components/ui/logo/logo";
+import SelectTeam from "./select-team";
 
-export default function Sidenav() {
+export default function Sidenav({ session }: { session: any }) {
   const pathname = usePathname();
   const [showSidebar, setShowSidebar] = useState(false);
 
@@ -31,6 +32,8 @@ export default function Sidenav() {
         >
           <Logo className="h-7" />
         </Link>
+
+        <SelectTeam session={session} />
 
         <ul className="flex-1 p-4 space-y-3 font-semibold">
           <li>

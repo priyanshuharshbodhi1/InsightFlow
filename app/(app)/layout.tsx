@@ -7,7 +7,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
 
   return (
     <div className="min-h-screen flex bg-slate-50">
-      <Sidenav />
+      <Sidenav session={session} />
 
       <div className="flex-1 overflow-x-auto">
         <div className="flex justify-between items-center bg-white border-b border-gray-200 py-4 px-4 md:px-6">
