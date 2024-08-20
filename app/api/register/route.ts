@@ -16,11 +16,28 @@ export async function POST(req: Request) {
 
   try {
     const hash = await bcrypt.hash(password, 10);
+
+    const team = await prisma.team.create({
+      data: {
+        name: name + "'s team",
+        description: "Default team",
+      },
+    });
+
     const user = await prisma.user.create({
       data: {
         name,
         email,
+        currentTeamId: team.id,
         password: hash,
+      },
+    });
+
+    const teamMember = await prisma.teamMember.create({
+      data: {
+        teamId: team.id,
+        userId: user.id,
+        role: "owner",
       },
     });
 

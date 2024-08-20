@@ -22,8 +22,11 @@ model User {
   email         String?         @unique
   emailVerified DateTime?
   image         String?
+  currentTeamId String?
   accounts      Account[]
   sessions      Session[]
+  teams         TeamMember[]
+
   // Optional for WebAuthn support
   Authenticator Authenticator[]
 
@@ -89,4 +92,26 @@ model Authenticator {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, credentialID])
+}
+
+model Team {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  members     TeamMember[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model TeamMember {
+  teamId      String
+  userId      String
+  role        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  team Team @relation(fields: [teamId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@id([userId, teamId])
 }
