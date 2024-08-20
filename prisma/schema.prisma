@@ -99,6 +99,8 @@ model Team {
   name        String
   description String?
   members     TeamMember[]
+  feedbacks   Feedback[]
+  customers   Customer[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -114,4 +116,35 @@ model TeamMember {
   user User @relation(fields: [userId], references: [id])
 
   @@id([userId, teamId])
+}
+
+model Customer {
+  id          String   @id @default(cuid())
+  teamId      String
+  name        String?
+  email       String?
+  phone       String?
+  address     String?
+  feedbacks   Feedback[]
+  isVerified  Boolean @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  team Team @relation(fields: [teamId], references: [id])
+}
+
+model Feedback {
+  id          String   @id @default(cuid())
+  teamId      String
+  customerId  String
+  type        String?
+  rate        Int?
+  description String?
+  sentiment   String?
+  isResolved  Boolean @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  team Team @relation(fields: [teamId], references: [id])
+  customer Customer @relation(fields: [customerId], references: [id])
 }
