@@ -14,6 +14,10 @@ const config = {
       center: true,
     },
     extend: {
+      colors: {
+        brand: "#FF204E",
+        dark: "#00224D",
+      },
       keyframes: {
         "accordion-down": {
           from: { height: "0" },
