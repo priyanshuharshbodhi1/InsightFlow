@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Grid2X2, Home, MessageSquareDashed, Users2 } from "lucide-react";
+import { Grid2X2, Home, Link2, MessageSquareDashed, Palette, Users2 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import Logo from "@/components/ui/logo/logo";
@@ -40,7 +40,7 @@ export default function Sidenav({ session }: { session: any }) {
             <Link
               href="/dashboard"
               className={`w-full text-sm text-white flex items-center space-x-2 px-4 py-3 rounded-md ${
-                pathname === "/dashboard" ? "bg-brand text-dark" : "text-white/70 hover:text-white"
+                pathname === "/dashboard" ? "bg-gradient-to-r from-brand text-dark" : "text-white/70 hover:text-white"
               }`}
             >
               <Home className="w-4 h-4" />
@@ -51,7 +51,7 @@ export default function Sidenav({ session }: { session: any }) {
             <Link
               href="/feedback"
               className={`w-full text-sm text-white flex items-center space-x-2 px-4 py-3 rounded-md ${
-                pathname === "/feedback" ? "bg-brand text-dark" : "text-white/70 hover:text-white"
+                pathname === "/feedback" ? "bg-gradient-to-r from-brand text-dark" : "text-white/70 hover:text-white"
               }`}
             >
               <MessageSquareDashed className="w-4 h-4" />
@@ -62,7 +62,7 @@ export default function Sidenav({ session }: { session: any }) {
             <Link
               href="/customers"
               className={`w-full text-sm text-white flex items-center space-x-2 px-4 py-3 rounded-md ${
-                pathname === "/customers" ? "bg-brand text-dark" : "text-white/70 hover:text-white"
+                pathname === "/customers" ? "bg-gradient-to-r from-brand text-dark" : "text-white/70 hover:text-white"
               }`}
             >
               <Users2 className="w-4 h-4" />
@@ -73,11 +73,22 @@ export default function Sidenav({ session }: { session: any }) {
             <Link
               href="/widgets"
               className={`w-full text-sm text-white flex items-center space-x-2 px-4 py-3 rounded-md ${
-                pathname === "/widgets" ? "bg-brand text-dark" : "text-white/70 hover:text-white"
+                pathname === "/widgets" ? "bg-gradient-to-r from-brand text-dark" : "text-white/70 hover:text-white"
               }`}
             >
-              <Grid2X2 className="w-4 h-4" />
-              <span>Widgets</span>
+              <Palette className="w-4 h-4" />
+              <span>Widget Style</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/integrations"
+              className={`w-full text-sm text-white flex items-center space-x-2 px-4 py-3 rounded-md ${
+                pathname === "/integrations" ? "bg-gradient-to-r from-brand text-dark" : "text-white/70 hover:text-white"
+              }`}
+            >
+              <Link2 className="w-4 h-4" />
+              <span>Integration</span>
             </Link>
           </li>
         </ul>
