@@ -17,10 +17,24 @@ export async function POST(req: Request) {
   try {
     const hash = await bcrypt.hash(password, 10);
 
+    const splitName = name.split(" ");
     const team = await prisma.team.create({
       data: {
-        name: name + "'s team",
+        name: splitName.length > 0 ? splitName[0] + "'s Team" : name + "'s Team",
         description: "Default team",
+        style: {
+          button_bg: "#FF204E",
+          button_color: "white",
+          button_text: "Give Feedback",
+          button_position: "right",
+          form_bg: "#FF204E",
+          form_color: "white",
+          form_title: "Your Feedback Matters",
+          form_subtitle: "Let us hear your thoughts",
+          form_rate_text: "Rate your overall experience",
+          form_details_text: "Add more details",
+          form_button_text: "Send Feedback",
+        },
       },
     });
 

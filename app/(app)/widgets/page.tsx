@@ -3,17 +3,21 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { XIcon } from "lucide-react";
-// import { ChromePicker } from "react-color";
+import { Save, XIcon } from "lucide-react";
+import { ChromePicker } from "react-color";
 import clsx from "clsx";
 import toast from "react-hot-toast";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Label } from "@/components/ui/label";
+import { useTeam } from "@/lib/store";
+import { stat } from "fs";
 
 const formSchema = z.object({
   button_bg: z.string(),
@@ -31,51 +35,58 @@ const formSchema = z.object({
 
 export default function Page() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const team = useTeam((state) => state.team);
+  const setTeam = useTeam((state) => state.setTeam);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      button_bg: "sdf",
-      button_color: "",
-      button_text: "",
-      button_position: "",
-      form_bg: "",
-      form_color: "",
-      form_title: "",
-      form_subtitle: "",
-      form_rate_text: "",
-      form_details_text: "",
-      form_button_text: "",
-    },
   });
+
+
+  useEffect(() => {
+    if (team) {
+      form.setValue('button_bg', team.style.button_bg)
+      form.setValue('button_color', team.style.button_color)
+      form.setValue('button_text', team.style.button_text)
+      form.setValue('button_position', team.style.button_position)
+      form.setValue('form_bg', team.style.form_bg)
+      form.setValue('form_color', team.style.form_color)
+      form.setValue('form_title', team.style.form_title)
+      form.setValue('form_subtitle', team.style.form_subtitle)
+      form.setValue('form_rate_text', team.style.form_rate_text)
+      form.setValue('form_details_text', team.style.form_details_text)
+      form.setValue('form_button_text', team.style.form_button_text)
+    }
+  }, [team, form]);
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
-    toast.loading("Logging in...");
+    toast.loading("Saving...");
 
-    // fetch("/api/login", {
-    //   method: "POST",
-    //   body: JSON.stringify(values),
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    // })
-    //   .then((res) => res.json())
-    //   .then(async (res) => {
-    //     toast.dismiss();
-    //     if (res.success) {
-    //       await signIn("credentials", values);
-    //     } else {
-    //       toast.error(res.message);
-    //     }
+    fetch("/api/team/style", {
+      method: "POST",
+      body: JSON.stringify({teamId: team.id, style: values}),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => res.json())
+      .then(async (res) => {
+        toast.dismiss();
+        if (res.success) {
+          toast.success("Saved successfully!");
+          setTeam(res.data);
+        } else {
+          toast.error(res.message);
+        }
 
-    //     setIsSubmitting(false);
-    //   })
-    //   .catch((err) => {
-    //     toast.dismiss();
-    //     toast.error(err.message);
-    //     setIsSubmitting(false);
-    //   });
+        setIsSubmitting(false);
+      })
+      .catch((err) => {
+        toast.dismiss();
+        toast.error(err.message);
+        setIsSubmitting(false);
+      });
   };
 
   return (
@@ -89,41 +100,43 @@ export default function Page() {
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <Card>
               <CardHeader className="border-b py-3">
-                <h2 className="font-bold">Feedback Settings</h2>
+                <h2 className="font-bold">Settings</h2>
               </CardHeader>
               <CardContent className="pt-6">
                 <Tabs defaultValue="form" className="w-full">
                   <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="form">Form</TabsTrigger>
-                    <TabsTrigger value="button">Button</TabsTrigger>
+                    <TabsTrigger value="form">Feedback Form</TabsTrigger>
+                    <TabsTrigger value="button">Button Trigger</TabsTrigger>
                   </TabsList>
                   <TabsContent value="form" className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="form_bg"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Background</FormLabel>
-                          <FormControl>
-                            <Input {...field} placeholder="...." disabled={isSubmitting} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="form_color"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Foreground</FormLabel>
-                          <FormControl>
-                            <Input {...field} placeholder="...." disabled={isSubmitting} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                    <div className="space-y-2">
+                      <Label htmlFor="form_bg">Background</Label>
+                      <Popover>
+                        <PopoverTrigger className="w-full h-10 rounded-full border border-dashed border-black text-xs text-black/50" style={{ background: form.watch('form_bg') }}></PopoverTrigger>
+                        <PopoverContent className="p-0 bg-transparent border-none shadow-none flex items-center justify-center">
+                          <ChromePicker
+                            color={form.watch("form_bg")}
+                            onChangeComplete={(color: any) => {
+                              form.setValue("form_bg", color.hex);
+                            }}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="form_color">Foreground</Label>
+                      <Popover>
+                        <PopoverTrigger className="w-full h-10 rounded-full border border-dashed border-black text-xs text-black/50" style={{ background: form.watch('form_color') }}></PopoverTrigger>
+                        <PopoverContent className="p-0 bg-transparent border-none shadow-none flex items-center justify-center">
+                          <ChromePicker
+                            color={form.watch("form_color")}
+                            onChangeComplete={(color: any) => {
+                              form.setValue("form_color", color.hex);
+                            }}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
                     <FormField
                       control={form.control}
                       name="form_title"
@@ -191,32 +204,34 @@ export default function Page() {
                     />
                   </TabsContent>
                   <TabsContent value="button" className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="button_bg"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Background</FormLabel>
-                          <FormControl>
-                            <Input {...field} placeholder="...." disabled={isSubmitting} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="button_color"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Foreground</FormLabel>
-                          <FormControl>
-                            <Input {...field} placeholder="...." disabled={isSubmitting} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                  <div className="space-y-2">
+                      <Label htmlFor="button_bg">Background</Label>
+                      <Popover>
+                        <PopoverTrigger className="w-full h-10 rounded-full border border-dashed border-black text-xs text-black/50" style={{ background: form.watch('button_bg') }}></PopoverTrigger>
+                        <PopoverContent className="p-0 bg-transparent border-none shadow-none flex items-center justify-center">
+                          <ChromePicker
+                            color={form.watch("button_bg")}
+                            onChangeComplete={(color: any) => {
+                              form.setValue("button_bg", color.hex);
+                            }}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="button_color">Foreground</Label>
+                      <Popover>
+                        <PopoverTrigger className="w-full h-10 rounded-full border border-dashed border-black text-xs text-black/50" style={{ background: form.watch('button_color') }}></PopoverTrigger>
+                        <PopoverContent className="p-0 bg-transparent border-none shadow-none flex items-center justify-center">
+                          <ChromePicker
+                            color={form.watch("button_color")}
+                            onChangeComplete={(color: any) => {
+                              form.setValue("button_color", color.hex);
+                            }}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
                     <FormField
                       control={form.control}
                       name="button_text"
@@ -237,9 +252,9 @@ export default function Page() {
                         <FormItem>
                           <FormLabel>Position</FormLabel>
                           <FormControl>
-                            <Select {...field} disabled={isSubmitting}>
-                              <SelectTrigger className="w-[180px]">
-                                <SelectValue placeholder="Theme" />
+                            <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isSubmitting}>
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Position" />
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectItem value="right">Right</SelectItem>
@@ -257,7 +272,8 @@ export default function Page() {
                 </Tabs>
               </CardContent>
               <CardFooter className="border-t py-3">
-                <Button type="submit" disabled={isSubmitting}>
+                <Button variant="dark" type="submit" disabled={isSubmitting} className="gap-2">
+                  <Save className="w-5" />
                   Save
                 </Button>
               </CardFooter>
@@ -281,7 +297,7 @@ export default function Page() {
               <Tabs defaultValue="form" className="w-full flex items-center justify-center pt-4">
                 <TabsList>
                   <TabsTrigger value="form">Feedback Form</TabsTrigger>
-                  <TabsTrigger value="button">Feedback Button</TabsTrigger>
+                  <TabsTrigger value="button">Button Trigger</TabsTrigger>
                 </TabsList>
                 <TabsContent value="form">
                   <div className="absolute bottom-4 right-4 max-w-xs w-full bg-white rounded-xl">
@@ -332,7 +348,7 @@ export default function Page() {
                         <p className="text-sm mb-2 mt-3">{form.watch("form_details_text")}</p>
                         <textarea
                           className="w-full rounded border p-3 placeholder:text-sm mb-2"
-                          rows="6"
+                          rows={6}
                           placeholder="Please let us know what's your feedback"
                         ></textarea>
 
