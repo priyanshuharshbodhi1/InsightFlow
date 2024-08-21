@@ -59,7 +59,7 @@ export default function Page() {
           setDescription("");
           toast.success("Thanks for sharing your feedback!");
           setTimeout(() => {
-            parent.postMessage("getfeed-minimized", "*");
+            parent.postMessage("zapfeed-minimized", "*");
           }, 1500);
         } else {
           toast.error(res.message);
@@ -73,7 +73,7 @@ export default function Page() {
   };
 
   return (
-    <div className="bg-black/80 backdrop-blur-sm inset-0 fixed">
+    <div className="bg-black/70 backdrop-blur-sm inset-0 fixed">
       <div className="absolute bottom-4 right-4 max-w-xs w-full bg-white rounded-xl">
         <div className="w-full rounded-xl p-4" style={{ backgroundColor: team?.style?.form_bg }}>
           <div className="flex items-start justify-between mb-3" style={{ color: team?.style?.form_color }}>
@@ -82,7 +82,7 @@ export default function Page() {
               <p className="text-sm">{team?.style?.form_subtitle}</p>
             </div>
             <button
-              onClick={() => parent.postMessage("getfeed-minimized", "*")}
+              onClick={() => parent.postMessage("zapfeed-minimized", "*")}
               className="p-1 bg-white/50 rounded-full"
               style={{ color: team?.style?.form_bg }}
             >

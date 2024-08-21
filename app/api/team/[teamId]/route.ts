@@ -10,10 +10,10 @@ export async function GET(request: Request, { params }: { params: { teamId: stri
   const connection = connect({ url: process.env.DATABASE_URL });
   const adapter = new PrismaTiDBCloud(connection);
   const prisma = new PrismaClient({ adapter });
-  const session = await auth();
-  if (!session) {
-    return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
-  }
+  // const session = await auth();
+  // if (!session) {
+  //   return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+  // }
 
   const team = await prisma.team.findUnique({
     where: {
@@ -25,5 +25,15 @@ export async function GET(request: Request, { params }: { params: { teamId: stri
     return NextResponse.json({ success: false, message: "Team not found" }, { status: 404 });
   }
 
-  return NextResponse.json({ success: true, message: "Successfully updated", data: team }, { status: 200 });
+  return NextResponse.json(
+    { success: true, message: "Success to get team", data: team },
+    {
+      status: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      },
+    }
+  );
 }

@@ -6,7 +6,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
   const session = await auth();
 
   return (
-    <div className="min-h-screen flex bg-slate-50">
+    <div className="min-h-screen flex bg-gray-50">
       <Sidenav session={session} />
 
       <div className="flex-1 overflow-x-auto">
