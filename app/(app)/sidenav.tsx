@@ -58,7 +58,7 @@ export default function Sidenav({ session }: { session: any }) {
               <span>Feedback</span>
             </Link>
           </li>
-          <li>
+          {/* <li>
             <Link
               href="/customers"
               className={`w-full text-sm text-white flex items-center space-x-2 px-4 py-3 rounded-md ${
@@ -68,7 +68,7 @@ export default function Sidenav({ session }: { session: any }) {
               <Users2 className="w-4 h-4" />
               <span>Customers</span>
             </Link>
-          </li>
+          </li> */}
           <li>
             <Link
               href="/widgets"
