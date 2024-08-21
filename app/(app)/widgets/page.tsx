@@ -17,7 +17,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Label } from "@/components/ui/label";
 import { useTeam } from "@/lib/store";
-import { stat } from "fs";
 
 const formSchema = z.object({
   button_bg: z.string(),
