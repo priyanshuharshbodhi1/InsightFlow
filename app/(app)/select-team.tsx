@@ -33,13 +33,13 @@ export default function SelectTeam({ session }: { session: any }) {
         })
         .catch((err) => console.log(err));
     }
-  }, [session, user]);
+  }, [session, user, setUser]);
 
   useEffect(() => {
     if (user && activeTeam === null) {
       setActiveTeam(user.teams.find((o: any) => o.team.id === user.currentTeamId).team);
     }
-  }, [user, activeTeam]);
+  }, [user, activeTeam, setActiveTeam]);
 
   // const router = useRouter();
   // const [selectedMerchant, setSelectedMerchant] = useState();
