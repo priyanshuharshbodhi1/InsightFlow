@@ -41,8 +41,8 @@ export default function ListFeedback() {
             <div key={i.id} className="w-full rounded p-4 bg-white shadow border hover:border-brand hover:shadow-md transition-all">
               <div className="flex items-center gap-2 text-xs uppercase font-semibold mb-2">
                 <div
-                  className={`flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[9px] ${i.sentiment === "positive" && "bg-green-500 text-white"} ${
-                    i.sentiment === "negative" && "bg-red-500 text-white"
+                  className={`flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[9px] ${i.sentiment === "positive" && "bg-[#00dc94] text-white"} ${
+                    i.sentiment === "negative" && "bg-[#f70030] text-white"
                   } ${i.sentiment === "neutral" && "bg-gray-900 text-white"}`}
                 >
                   <SmilePlus className="w-3 h-3" />

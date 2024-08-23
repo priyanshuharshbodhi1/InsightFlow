@@ -1,10 +1,13 @@
 "use client";
 
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTeam } from "@/lib/store";
-import { ArrowRight, Frown, Meh, MessageSquare, MessageSquareDashed, MessageSquarePlus, Smile, SmilePlus, Star } from "lucide-react";
+import { Frown, Meh, MessageSquare, MessageSquareDashed, MessageSquarePlus, Smile, Star } from "lucide-react";
 import { useEffect, useState } from "react";
 import TopKeywords from "./top-keywords";
+import { ChartContainer } from "@/components/ui/chart";
+import { Bar, BarChart, LabelList, XAxis, YAxis } from "recharts";
+import { Separator } from "@/components/ui/separator";
 
 export default function Dashboard() {
   const team = useTeam((state) => state.team);
@@ -47,81 +50,157 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6">
-        <div className="w-full bg-white rounded border p-4 shadow-sm">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              <MessageSquarePlus className="w-5 h-5" />
-              <h4 className="font-bold text-lg">{stats?.total}</h4>
-            </div>
-            <ArrowRight className="w-4 h-4" />
-          </div>
-          <p className="text-sm">Feedback Added</p>
-        </div>
-        <div className="w-full bg-white rounded border p-4 shadow-sm">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              <MessageSquareDashed className="w-5 h-5" />
-              <h4 className="font-bold text-lg">{stats?.open}</h4>
-            </div>
-            <ArrowRight className="w-4 h-4" />
-          </div>
-          <p className="text-sm">Feedback Open</p>
-        </div>
-        <div className="w-full bg-white rounded border p-4 shadow-sm">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              <MessageSquare className="w-5 h-5" />
-              <h4 className="font-bold text-lg">{stats?.resolved}</h4>
-            </div>
-            <ArrowRight className="w-4 h-4" />
-          </div>
-          <p className="text-sm">Feedback Resolved</p>
-        </div>
-        <div className="w-full bg-white rounded border p-4 shadow-sm">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              <Star className="w-5 h-5" />
-              <h4 className="font-bold text-lg">{stats?.ratingAverage}</h4>
-            </div>
-            <ArrowRight className="w-4 h-4" />
-          </div>
-          <p className="text-sm">Rating Average</p>
-        </div>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Feedback Added</CardTitle>
+            <MessageSquarePlus className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats?.total}</div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Feedback Open</CardTitle>
+            <MessageSquareDashed className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats?.open}</div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Feedback Resolved</CardTitle>
+            <MessageSquare className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats?.resolved}</div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Rating Average</CardTitle>
+            <Star className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats?.ratingAverage}</div>
+          </CardContent>
+        </Card>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="md:col-span-2">
-          <Card className="p-4">
-            <h3 className="font-bold mb-2">Top Keywords</h3>
-            <TopKeywords data={topKeywords} />
+      <div>
+          <Card className="max-w-xs">
+            <CardHeader className="py-3">
+              <CardTitle className="text-sm font-bold">Sentiment</CardTitle>
+            </CardHeader>
+            <CardContent className="flex gap-4 border-t p-4 pb-2">
+              <ChartContainer
+                config={{
+                  negative: {
+                    label: "Negative",
+                    color: "#f70030",
+                  },
+                  neutral: {
+                    label: "Neutral",
+                    color: "#333333",
+                  },
+                  positive: {
+                    label: "Positive",
+                    color: "#00dc94",
+                  },
+                }}
+                className="h-[140px] w-full"
+              >
+                <BarChart
+                  margin={{
+                    left: 0,
+                    right: 0,
+                    top: 0,
+                    bottom: 10,
+                  }}
+                  data={[
+                    {
+                      activity: "positive",
+                      value: parseInt(stats?.sentiment?.find((o: any) => o.name === "positive")?.percentage),
+                      label: stats?.sentiment?.find((o: any) => o.name === "positive")?.percentage + "%",
+                      fill: "#00dc94",
+                    },
+                    {
+                      activity: "neutral",
+                      value: parseInt(stats?.sentiment?.find((o: any) => o.name === "neutral")?.percentage),
+                      label: stats?.sentiment?.find((o: any) => o.name === "neutral")?.percentage + "%",
+                      fill: "#333333",
+                    },
+                    {
+                      activity: "negative",
+                      value: parseInt(stats?.sentiment?.find((o: any) => o.name === "negative")?.percentage),
+                      label: stats?.sentiment?.find((o: any) => o.name === "negative")?.percentage + "%",
+                      fill: "#f70030",
+                    },
+                  ]}
+                  layout="vertical"
+                  barSize={32}
+                  barGap={2}
+                >
+                  <XAxis type="number" dataKey="value" hide />
+                  <YAxis
+                    dataKey="activity"
+                    type="category"
+                    tickLine={false}
+                    tickMargin={4}
+                    axisLine={false}
+                    className="capitalize"
+                  />
+                  <Bar dataKey="value" radius={5}>
+                    <LabelList
+                      position="insideLeft"
+                      dataKey="label"
+                      fill="white"
+                      offset={8}
+                      fontSize={12}
+                    />
+                  </Bar>
+                </BarChart>
+              </ChartContainer>
+            </CardContent>
+            <CardFooter className="flex flex-row border-t p-4">
+              <div className="flex w-full items-center gap-2">
+                <div className="grid flex-1 auto-rows-min gap-0.5">
+                  <div className="text-xs text-muted-foreground">Positive</div>
+                  <div className="flex items-baseline gap-1 text-2xl font-bold tabular-nums leading-none">
+                    {stats?.sentiment?.find((o: any) => o.name === "positive")?.count}
+                  </div>
+                </div>
+                <Separator orientation="vertical" className="mx-2 h-10 w-px" />
+                <div className="grid flex-1 auto-rows-min gap-0.5">
+                  <div className="text-xs text-muted-foreground">Neutral</div>
+                  <div className="flex items-baseline gap-1 text-2xl font-bold tabular-nums leading-none">
+                    {stats?.sentiment?.find((o: any) => o.name === "neutral")?.count}
+                  </div>
+                </div>
+                <Separator orientation="vertical" className="mx-2 h-10 w-px" />
+                <div className="grid flex-1 auto-rows-min gap-0.5">
+                  <div className="text-xs text-muted-foreground">Negative</div>
+                  <div className="flex items-baseline gap-1 text-2xl font-bold tabular-nums leading-none">
+                    {stats?.sentiment?.find((o: any) => o.name === "negative")?.count}
+                  </div>
+                </div>
+              </div>
+            </CardFooter>
           </Card>
         </div>
-        <div>
-          <Card className="p-4">
-            <h3 className="font-bold mb-2">Sentiment</h3>
-            <div className="divide-y-2 font-medium">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1 py-2 text-green-500">
-                  <Smile className="w-4 h-4" />
-                  <p>Positive</p>
-                </div>
-                <p className="font-bold font-mono">{stats?.sentiment?.find((o: any) => o.name === "positive")?.percentage}%</p>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1 py-2">
-                  <Meh className="w-4 h-4" />
-                  <p>Neutral</p>
-                </div>
-                <p className="font-bold font-mono">{stats?.sentiment?.find((o: any) => o.name === "neutral")?.percentage}%</p>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1 py-2 text-red-500">
-                  <Frown className="w-4 h-4" />
-                  <p>Negative</p>
-                </div>
-                <p className="font-bold font-mono">{stats?.sentiment?.find((o: any) => o.name === "negative")?.percentage}%</p>
-              </div>
-            </div>
+        <div className="md:col-span-2">
+          <Card>
+            <CardHeader className="py-3">
+              <CardTitle className="text-sm font-bold">Top Keywords</CardTitle>
+            </CardHeader>
+            <CardContent className="flex gap-4 border-t p-4 pb-2">
+              <TopKeywords data={topKeywords} />
+            </CardContent>
           </Card>
         </div>
       </div>
