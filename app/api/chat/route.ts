@@ -21,8 +21,6 @@ export async function POST(req: Request) {
   const formattedPreviousMessages = messages.slice(0, -1).map(formatMessage);
   const currentMessageContent = messages[messages.length - 1].content;
 
-  console.log(messages);
-
   const texts = [currentMessageContent];
   const embeddings = new OpenAIEmbeddings({
     model: "text-embedding-3-small",
@@ -34,7 +32,6 @@ export async function POST(req: Request) {
     `SELECT id, content, vec_cosine_distance(embedding, '[${vectorData}]') AS distance FROM EmbeddedDocument ORDER BY distance LIMIT 40`
   );
   const context = relateds.map((r) => r.content).join("\n- ");
-  console.log(context);
 
   const result = await streamText({
     model: openai("gpt-4o-mini"),

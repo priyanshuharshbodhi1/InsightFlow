@@ -20,6 +20,8 @@ Input: {input}
 Output:
 `;
 
+const AI_RESPONSE = `User given feedback for us, please provide a summary or suggestion how to address common issues raised to act for us as company. Format the results in markdown. Here is the feedback: {input}`;
+
 export async function POST(req: Request) {
   const connection = connect({ url: process.env.DATABASE_URL });
   const adapter = new PrismaTiDBCloud(connection);
@@ -37,11 +39,22 @@ export async function POST(req: Request) {
     });
     const textClassify = await modelClassify.invoke(formattedPromptClassify);
 
+    // aiResponse feedback
+    const promptResponse = ChatPromptTemplate.fromTemplate(AI_RESPONSE);
+    const formattedPromptResponse = await promptResponse.format({
+      input: body.text,
+    });
+    const modelResponse = new ChatOpenAI({
+      temperature: 0.7,
+    });
+    const textResponse = await modelResponse.invoke(formattedPromptResponse);
+
     const feedbackStored = await prisma.feedback.create({
       data: {
         teamId: body.teamId,
         rate: body.rate,
         description: body.text,
+        aiResponse: (textResponse.content as String).trim(),
         sentiment: (textClassify.content as String).trim(),
       },
     });

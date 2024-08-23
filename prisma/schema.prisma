@@ -142,7 +142,8 @@ model Feedback {
   customerId  String?
   type        String?
   rate        Int?
-  description String?
+  description String? @db.Text
+  aiResponse  String? @db.Text
   sentiment   String?
   isResolved  Boolean @default(false)
   createdAt   DateTime @default(now())

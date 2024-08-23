@@ -30,8 +30,6 @@ export default function Page() {
     getTeam();
   }, [params?.id]);
 
-  console.log(team);
-
   const handleSendFeedback = async () => {
     if (rate == 0) {
       return toast.error("Rate your overall experience!");

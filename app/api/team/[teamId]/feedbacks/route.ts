@@ -29,6 +29,9 @@ export async function GET(req: Request, { params }: { params: { teamId: string }
     where: {
       teamId: teamId,
     },
+    orderBy: {
+      createdAt: "desc",
+    },
   });
 
   return NextResponse.json({ success: true, message: "Success to get team", data: feedbacks });
