@@ -103,7 +103,7 @@ export default function Page({ params }: { params: { id: string } }) {
             <CardContent className="p-6 text-sm space-y-3">
               {feedback?.relateds?.map((r: any) => (
                 <Link
-                  href={`/feedback/${r.id}`}
+                  href={`/feedback/${r.metadata.feedbackId}`}
                   key={r.id}
                   className={`line-clamp-2 border-l-4 pl-2 ${r.metadata.sentiment === "positive" && "border-[#00dc94]"} ${
                     r.metadata.sentiment === "negative" && "border-[#f70030]"

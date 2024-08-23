@@ -93,7 +93,7 @@ export default function Dashboard() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div>
-          <Card className="max-w-xs">
+          <Card className="w-full">
             <CardHeader className="py-3">
               <CardTitle className="text-sm font-bold">Sentiment</CardTitle>
             </CardHeader>
