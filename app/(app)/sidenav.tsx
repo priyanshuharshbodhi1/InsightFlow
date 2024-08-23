@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Grid2X2, Home, Link2, MessageSquareDashed, Palette, Users2 } from "lucide-react";
+import { BotMessageSquare, Grid2X2, Home, LayoutDashboard, Link2, MessageSquareDashed, Palette, Users2 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import Logo from "@/components/ui/logo/logo";
@@ -43,7 +43,7 @@ export default function Sidenav({ session }: { session: any }) {
                 pathname === "/dashboard" ? "bg-gradient-to-r from-brand text-dark" : "text-white/70 hover:text-white"
               }`}
             >
-              <Home className="w-4 h-4" />
+              <LayoutDashboard className="w-4 h-4" />
               <span>Dashboard</span>
             </Link>
           </li>
@@ -56,6 +56,17 @@ export default function Sidenav({ session }: { session: any }) {
             >
               <MessageSquareDashed className="w-4 h-4" />
               <span>Feedback</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/analysis"
+              className={`w-full text-sm text-white flex items-center space-x-2 px-4 py-3 rounded-md ${
+                pathname === "/analysis" ? "bg-gradient-to-r from-brand text-dark" : "text-white/70 hover:text-white"
+              }`}
+            >
+              <BotMessageSquare className="w-4 h-4" />
+              <span>AI Analysis</span>
             </Link>
           </li>
           {/* <li>

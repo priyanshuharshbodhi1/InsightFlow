@@ -10,6 +10,7 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^0.0.53",
     "@auth/prisma-adapter": "^2.4.2",
     "@headlessui/react": "^2.1.2",
     "@hookform/resolvers": "^3.9.0",
@@ -27,6 +28,7 @@
     "@radix-ui/react-tabs": "^1.1.0",
     "@tidbcloud/prisma-adapter": "^5.15.0",
     "@tidbcloud/serverless": "^0.2.0",
+    "ai": "^3.3.16",
     "bcryptjs": "^2.4.3",
     "boring-avatars": "^1.10.2",
     "class-variance-authority": "^0.7.0",
