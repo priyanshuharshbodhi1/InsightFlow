@@ -83,7 +83,7 @@ export async function POST(req: Request) {
       }
     });
 
-    const texts = [`Feedback: ${body.text}\nSentiment: ${(textClassify.content as String).trim()}`];
+    const texts = [`${body.text}`];
 
     const embeddings = new OpenAIEmbeddings({
       model: "text-embedding-3-small",

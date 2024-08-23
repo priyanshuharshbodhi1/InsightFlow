@@ -7,6 +7,7 @@ import { useTeam } from "@/lib/store";
 import { useChat } from "ai/react";
 import { CornerDownLeft, PackageOpen } from "lucide-react";
 import { Session } from "next-auth";
+import { marked } from "marked";
 
 export default function Chat({ session }: { session: Session | null }) {
   const team = useTeam((state) => state.team);
@@ -25,17 +26,16 @@ export default function Chat({ session }: { session: Session | null }) {
             {messages.map((m) => (
               <div className={`mb-2 flex ${m.role === "user" ? "justify-end" : "justify-start"}`} key={m.id}>
                 <div
-                  className={`inline-block max-w-[80%] rounded-t-2xl border border-slate-200 bg-white p-3 text-sm shadow-sm ${
+                  className={`inline-block max-w-[80%] rounded-t-2xl border border-slate-200 bg-white p-3 text-sm shadow-sm prose ${
                     m.role === "user" ? "rounded-bl-2xl" : "rounded-br-2xl"
                   }`}
                   style={{
-                    whiteSpace: `pre-line`,
+                    // whiteSpace: `pre-line`,
                     background: `${m.role === "user" && "black"}`,
                     color: `${m.role === "user" ? "white" : "black"}`,
                   }}
-                >
-                  {m.content}
-                </div>
+                  dangerouslySetInnerHTML={{ __html: marked(m.content) }}
+                ></div>
               </div>
             ))}
           </div>
