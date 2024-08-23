@@ -126,19 +126,19 @@ export default function Dashboard() {
                     {
                       activity: "positive",
                       value: parseInt(stats?.sentiment?.find((o: any) => o.name === "positive")?.percentage),
-                      label: stats?.sentiment?.find((o: any) => o.name === "positive")?.percentage + "%",
+                      label: parseFloat(stats?.sentiment?.find((o: any) => o.name === "positive")?.percentage).toFixed(2) + "%",
                       fill: "#00dc94",
                     },
                     {
                       activity: "neutral",
                       value: parseInt(stats?.sentiment?.find((o: any) => o.name === "neutral")?.percentage),
-                      label: stats?.sentiment?.find((o: any) => o.name === "neutral")?.percentage + "%",
+                      label: parseFloat(stats?.sentiment?.find((o: any) => o.name === "neutral")?.percentage).toFixed(2) + "%",
                       fill: "#333333",
                     },
                     {
                       activity: "negative",
                       value: parseInt(stats?.sentiment?.find((o: any) => o.name === "negative")?.percentage),
-                      label: stats?.sentiment?.find((o: any) => o.name === "negative")?.percentage + "%",
+                      label: parseFloat(stats?.sentiment?.find((o: any) => o.name === "negative")?.percentage).toFixed(2) + "%",
                       fill: "#f70030",
                     },
                   ]}
