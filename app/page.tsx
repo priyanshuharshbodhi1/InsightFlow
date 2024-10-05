@@ -26,7 +26,7 @@ export default async function Home() {
           </p>
 
           <div className="flex items-center justify-center gap-4 pointer-events-auto mt-10">
-            <Link href="#">
+            <Link href="https://youtu.be/-BkMrIukKYo">
               <Button
                 variant="outline"
                 size="lg"
