@@ -53,10 +53,10 @@
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.23.8",
-    "zustand": "^4.5.5"
+    "zustand": "^4.5.5",
+    "@tailwindcss/typography": "^0.5.14"
   },
   "devDependencies": {
-    "@tailwindcss/typography": "^0.5.14",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
     "@types/react": "^18",
