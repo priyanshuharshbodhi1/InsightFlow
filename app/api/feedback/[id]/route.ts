@@ -1,20 +1,17 @@
 import { auth } from "@/auth";
-import { OpenAIEmbeddings } from "@langchain/openai";
-import { PrismaClient } from "@prisma/client";
-import { PrismaTiDBCloud } from "@tidbcloud/prisma-adapter";
-import { connect } from "@tidbcloud/serverless";
+import { getPrismaClient } from "@/lib/database";
 import { NextResponse } from "next/server";
+import { getEmbeddingsModel } from "@/lib/ai-service";
 
 export async function GET(req: Request, { params }: { params: { id: string } }) {
-  const id = params.id;
+  try {
+    const id = params.id;
 
-  const connection = connect({ url: process.env.DATABASE_URL });
-  const adapter = new PrismaTiDBCloud(connection);
-  const prisma = new PrismaClient({ adapter });
-  const session = await auth();
-  if (!session) {
-    return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
-  }
+    const prisma = getPrismaClient();
+    const session = await auth();
+    if (!session) {
+      return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+    }
 
   const feedback = await prisma.feedback.findUnique({
     where: {
@@ -22,10 +19,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     },
   });
 
-  const embeddings = new OpenAIEmbeddings({
-    model: "text-embedding-3-small",
-    dimensions: 1536,
-  });
+  const embeddings = getEmbeddingsModel();
   const vectorData = await embeddings.embedDocuments([feedback?.description!]);
 
   const relateds = await prisma.$queryRawUnsafe<any[]>(
@@ -33,4 +27,9 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
   );
 
   return NextResponse.json({ success: true, message: "Success to get feedback", data: {...feedback, relateds} }, { status: 200 });
+  } catch (error) {
+    console.error("Feedback Detail API Error:", error);
+    const errorMessage = error instanceof Error ? error.message : "An error occurred while fetching feedback details";
+    return NextResponse.json({ success: false, message: errorMessage }, { status: 500 });
+  }
 }

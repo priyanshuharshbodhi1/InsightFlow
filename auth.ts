@@ -1,13 +1,11 @@
 import NextAuth from "next-auth";
-import { connect } from "@tidbcloud/serverless";
-import { PrismaTiDBCloud } from "@tidbcloud/prisma-adapter";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { PrismaClient } from "@prisma/client";
+import { getPrismaClient } from "@/lib/database";
 import credentials from "next-auth/providers/credentials";
+import bcrypt from "bcryptjs";
 
-const connection = connect({ url: process.env.DATABASE_URL });
-const adapter = new PrismaTiDBCloud(connection);
-const prisma = new PrismaClient({ adapter });
+// Initialize standard MySQL connection via Prisma
+const prisma = getPrismaClient();
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),

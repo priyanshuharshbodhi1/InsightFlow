@@ -1,20 +1,17 @@
 import { auth } from "@/auth";
-import { ChatOpenAI } from "@langchain/openai";
-import { PrismaClient } from "@prisma/client";
-import { PrismaTiDBCloud } from "@tidbcloud/prisma-adapter";
-import { connect } from "@tidbcloud/serverless";
+import { getPrismaClient } from "@/lib/database";
 import { NextResponse } from "next/server";
+import { getChatModel } from "@/lib/ai-service";
 
 export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
+  try {
+    const { searchParams } = new URL(req.url);
 
-  const connection = connect({ url: process.env.DATABASE_URL });
-  const adapter = new PrismaTiDBCloud(connection);
-  const prisma = new PrismaClient({ adapter });
-  const session = await auth();
-  if (!session) {
-    return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
-  }
+    const prisma = getPrismaClient();
+    const session = await auth();
+    if (!session) {
+      return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+    }
 
   let data;
   if (searchParams.get("sentiment") === "all") {
@@ -48,11 +45,13 @@ export async function GET(req: Request) {
 
   const feedbacks = data.map((i) => "- " + i.description);
 
-  const model = new ChatOpenAI({
-    model: "gpt-4o-mini",
-    temperature: 0.5,
-  });
+  const model = getChatModel(0.5);
   const res = await model.invoke(`The following is a list of feedback from customers for my business. Help me to create a summary in one to two sentences. And then give the conclusion of the summary:${feedbacks.join("\n")}`);
 
   return NextResponse.json({ success: true, message: "Success to summarized data", data: res.content });
+  } catch (error) {
+    console.error("Summary API Error:", error);
+    const errorMessage = error instanceof Error ? error.message : "An error occurred while generating summary";
+    return NextResponse.json({ success: false, message: errorMessage }, { status: 500 });
+  }
 }

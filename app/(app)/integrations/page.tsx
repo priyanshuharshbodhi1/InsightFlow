@@ -24,8 +24,22 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (team) {
-      setLink(`${process.env.NEXT_PUBLIC_BASE_URL}/collect/${team?.id}`);
-      setSnippet(`<script src="${process.env.NEXT_PUBLIC_BASE_URL}/widgets.js" zapfeed-id="${team?.id}"></script>`);
+      // Use environment variable with fallback to current window location
+      let baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+      
+      // If no env var set, detect from current location
+      if (!baseUrl && typeof window !== 'undefined') {
+        const port = window.location.port;
+        baseUrl = `${window.location.protocol}//${window.location.hostname}${port ? `:${port}` : ''}`;
+      }
+      
+      // Final fallback
+      if (!baseUrl) {
+        baseUrl = 'http://localhost:4500';
+      }
+      
+      setLink(`${baseUrl}/collect/${team?.id}`);
+      setSnippet(`<script src="${baseUrl}/widgets.js" zapfeed-id="${team?.id}"></script>`);
     }
   }, [team]);
 

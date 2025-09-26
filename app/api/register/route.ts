@@ -1,13 +1,9 @@
-import { connect } from "@tidbcloud/serverless";
-import { PrismaTiDBCloud } from "@tidbcloud/prisma-adapter";
-import { PrismaClient } from "@prisma/client";
+import { getPrismaClient } from "@/lib/database";
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 
 export async function POST(req: Request) {
-  const connection = connect({ url: process.env.DATABASE_URL });
-  const adapter = new PrismaTiDBCloud(connection);
-  const prisma = new PrismaClient({ adapter });
+  const prisma = getPrismaClient();
   const { name, email, password } = await req.json();
 
   if (!name || !email || !password) {
