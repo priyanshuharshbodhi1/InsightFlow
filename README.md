@@ -1,6 +1,6 @@
-# Zapfeed
+# InsightFlow
 
-[Zapfeed](https://zapfeed.xyz) is a SaaS application designed for business owners to effortlessly collect, analyze, and act on customer feedback using the power of AI. With Zapfeed, you can gain valuable insights into customer sentiments, streamline your feedback processes, and enhance customer satisfaction.
+[InsightFlow](https://insightflow.xyz) is a SaaS application designed for business owners to effortlessly collect, analyze, and act on customer feedback using the power of AI. With InsightFlow, you can gain valuable insights into customer sentiments, streamline your feedback processes, and enhance customer satisfaction.
 
 ## Features
 
@@ -8,7 +8,7 @@
 - **AI-Powered Summaries**: Get instant summaries of feedback and actionable insights.
 - **Dual AI Provider Support**: Automatically falls back from OpenAI to Gemini for cost-effective AI processing.
 - **Customizable Widgets**: Easily integrate feedback collection into your website with customizable widgets.
-- **Effortless Integration**: Embed Zapfeed with a single line of code, direct links, or QR codes.
+- **Effortless Integration**: Embed InsightFlow with a single line of code, direct links, or QR codes.
 - **AI Chat**: Interact with an AI chatbot to analyze feedback data and get insights.
 
 ## Technologies Used

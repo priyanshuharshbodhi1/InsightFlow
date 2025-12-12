@@ -57,7 +57,7 @@ export default function Page() {
           setDescription("");
           toast.success("Thanks for sharing your feedback!");
           setTimeout(() => {
-            parent.postMessage("zapfeed-minimized", "*");
+            parent.postMessage("insightflow-minimized", "*");
           }, 1500);
         } else {
           toast.error(res.message);
@@ -80,7 +80,7 @@ export default function Page() {
               <p className="text-sm">{team?.style?.form_subtitle}</p>
             </div>
             <button
-              onClick={() => parent.postMessage("zapfeed-minimized", "*")}
+              onClick={() => parent.postMessage("insightflow-minimized", "*")}
               className="p-1 bg-white/50 rounded-full"
               style={{ color: team?.style?.form_bg }}
             >

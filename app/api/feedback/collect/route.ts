@@ -1,5 +1,5 @@
 import { getPrismaClient } from "@/lib/database";
-import { elasticsearchGeminiService } from "@/lib/elasticsearch-simple";
+// import { elasticsearchGeminiService } from "@/lib/elasticsearch-simple";
 import { NextResponse } from "next/server";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { stopWords } from "@/lib/stop-words";
@@ -105,45 +105,84 @@ export async function POST(req: Request) {
       }
     });
 
-    // Generate embeddings and store in Elasticsearch
-    const texts = [`${body.text}`];
-    const embeddings = getEmbeddingsModel();
-    const vectorData = await embeddings.embedDocuments(texts);
+    // Generate embeddings and store in TiDB vector column
+    try {
+      const texts = [`${body.text}`];
+      const embeddings = getEmbeddingsModel();
+      const vectorData = await embeddings.embedDocuments(texts);
 
-    // Store document with embeddings in Elasticsearch
-    await elasticsearchGeminiService.indexDocument({
-      id: `feedback_${feedbackStored.id}`,
-      teamId: body.teamId,
-      content: texts[0],
-      embedding: vectorData[0],
-      metadata: { 
-        type: "feedback", 
-        sentiment: (textClassify.content as String).trim(), 
-        feedbackId: feedbackStored.id, 
-        teamId: body.teamId 
-      },
-      createdAt: new Date(),
-      updatedAt: new Date()
-    });
+      // Store document with embeddings in TiDB
+      const embeddedDocument = await prisma.embeddedDocument.create({
+        data: {
+          teamId: body.teamId,
+          content: texts[0],
+          metadata: { 
+            type: "feedback", 
+            sentiment: (textClassify.content as String).trim(), 
+            feedbackId: feedbackStored.id, 
+            teamId: body.teamId 
+          },
+        },
+      });
+
+      // Update vector column with raw SQL (TiDB requirement for vector type)
+      await prisma.$executeRawUnsafe(
+        `UPDATE EmbeddedDocument SET embedding = '[${vectorData[0]}]' WHERE id = '${embeddedDocument.id}'`
+      );
+      
+      console.log('✅ Feedback indexed in TiDB with vector successfully');
+    } catch (tidbError) {
+      // Log error but don't fail the request - TiDB vector storage is optional
+      console.warn('⚠️ TiDB vector indexing failed (feedback still saved to database):', tidbError instanceof Error ? tidbError.message : tidbError);
+    }
 
     return NextResponse.json({ success: true, message: "Success send feedback", data: feedbackStored }, { status: 200 });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Feedback Collection Error:", error);
     
     // Provide specific error messages for common issues
     let errorMessage = "An error occurred while processing feedback";
-    if (error instanceof Error) {
-      if (error.message.includes("GEMINI_API_KEY")) {
-        errorMessage = "Gemini API key is missing. Please add GEMINI_API_KEY to your .env file.";
-      } else if (error.message.includes("Elasticsearch")) {
-        errorMessage = "Elasticsearch connection failed. Please check your Elasticsearch configuration.";
-      } else if (error.message.includes("embedding")) {
-        errorMessage = "Failed to generate embeddings. Please check your Gemini API key and internet connection.";
-      } else {
-        errorMessage = error.message;
+    
+    if (error?.message) {
+      const errorMsg = error.message;
+      
+      // Check for quota exceeded error
+      if (errorMsg.includes("quota") || errorMsg.includes("RESOURCE_EXHAUSTED")) {
+        errorMessage = "⚠️ API quota exceeded. The Gemini API free tier limit has been reached. Please try again tomorrow or upgrade your API plan.";
+      }
+      // Check for database connection errors
+      else if (errorMsg.includes("Can't reach database") || errorMsg.includes("connection")) {
+        errorMessage = "🗄️ Database connection error: Unable to connect to the database. Please check your DATABASE_URL configuration.";
+      }
+      // Check for Prisma-specific errors
+      else if (errorMsg.includes("Prisma") || errorMsg.includes("PrismaClient")) {
+        errorMessage = `🗄️ Database error: ${errorMsg}`;
+      }
+      // Check for TiDB/MySQL errors
+      else if (errorMsg.includes("TiDB") || errorMsg.includes("MySQL") || errorMsg.includes("vector")) {
+        errorMessage = `🗄️ Database query error: ${errorMsg}`;
+      }
+      // Check for API key errors
+      else if (errorMsg.includes("GEMINI_API_KEY") || errorMsg.includes("API key")) {
+        errorMessage = "🔑 Gemini API key is missing or invalid. Please check your .env file.";
+      }
+      // Check for embedding errors
+      else if (errorMsg.includes("embedding") || errorMsg.includes("embed")) {
+        errorMessage = "🧠 Failed to generate embeddings. Please check your Gemini API key and internet connection.";
+      }
+      // Elasticsearch errors (legacy)
+      else if (errorMsg.includes("Elasticsearch")) {
+        errorMessage = "Elasticsearch connection failed (deprecated feature).";
+      }
+      else {
+        errorMessage = errorMsg;
       }
     }
     
-    return NextResponse.json({ success: false, message: errorMessage, error: error instanceof Error ? error.stack : error }, { status: 500 });
+    return NextResponse.json({ 
+      success: false, 
+      message: errorMessage, 
+      error: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.stack : error) : undefined 
+    }, { status: 500 });
   }
 }

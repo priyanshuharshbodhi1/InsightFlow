@@ -12,8 +12,12 @@ const config = {
     },
     extend: {
       colors: {
-        brand: "#FF204E",
-        dark: "#00224D",
+        brand: "#6366f1", // Indigo 500 - modern, trustworthy
+        brandDark: "#4f46e5", // Indigo 600 - darker accent
+        brandLight: "#818cf8", // Indigo 400 - lighter accent
+        accent: "#8b5cf6", // Violet 500 - complementary
+        dark: "#0f172a", // Slate 900 - deep dark
+        darkLight: "#1e293b", // Slate 800 - lighter dark
       },
       keyframes: {
         "accordion-down": {

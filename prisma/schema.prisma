@@ -5,7 +5,8 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
@@ -101,7 +102,7 @@ model Team {
   members     TeamMember[]
   feedbacks   Feedback[]
   feedbackTags FeedbackTag[]
-  // embeddedDocuments moved to Elasticsearch
+  embeddedDocuments EmbeddedDocument[]
   customers   Customer[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -163,5 +164,16 @@ model FeedbackTag {
   team Team @relation(fields: [teamId], references: [id])
 }
 
-// EmbeddedDocument model removed - vector operations moved to Elasticsearch
-// This table will be replaced by Elasticsearch index for better vector search capabilities
+model EmbeddedDocument {
+  id          String   @id @default(cuid())
+  teamId      String?
+  content     String @db.Text
+  metadata    Json
+  embedding   Unsupported("vector(768)")?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  team Team? @relation(fields: [teamId], references: [id])
+}
+
+// Note: Vector column uses 768 dimensions for Gemini text-embedding-004

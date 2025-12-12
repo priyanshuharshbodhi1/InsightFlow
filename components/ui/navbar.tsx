@@ -13,7 +13,7 @@ export default function Navbar({session}: {session: Session | null}) {
         <div className="w-full h-14 bg-gradient-to-r from-gray-900 to-dark rounded-full flex items-center justify-between px-4 text-white shadow-xl hover:scale-[1.02] hover:shadow-2xl transition-all">
           <div className="shrink-0 flex items-center gap-2">
             <LogoMark className="h-8 text-brand" />
-            <p className="font-black text-lg tracking-wide">Zapfeed</p>
+            <p className="font-black text-lg tracking-wide">InsightFlow</p>
           </div>
           <div className="flex items-center gap-6 text-sm font-medium text-white/70">
             {session ? (

@@ -39,7 +39,7 @@ export default function Dashboard() {
       }
       
       setLink(`${baseUrl}/collect/${team?.id}`);
-      setSnippet(`<script src="${baseUrl}/widgets.js" zapfeed-id="${team?.id}"></script>`);
+      setSnippet(`<script src="${baseUrl}/widgets.js" insightflow-id="${team?.id}"></script>`);
     }
   }, [team]);
 
