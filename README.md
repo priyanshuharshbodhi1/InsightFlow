@@ -2,6 +2,10 @@
 
 [InsightFlow](https://insightflow.xyz) is a SaaS application designed for business owners to effortlessly collect, analyze, and act on customer feedback using the power of AI. With InsightFlow, you can gain valuable insights into customer sentiments, streamline your feedback processes, and enhance customer satisfaction.
 
+# Demo Link
+
+https://www.youtube.com/watch?v=-BkMrIukKYo
+
 ## Features
 
 - **Intuitive Dashboard**: Visualize your feedback data with metrics like total feedback, sentiment analysis, and trends.
